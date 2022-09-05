@@ -17,20 +17,20 @@ const blogSchema = new mongoose.Schema({
     },
     tags: [String],
     category: {
-        type: String,
+        type: [String],
         required: true,
-        enum: ["technology", "entertainment", "life style", "food", "fashion"]
     },
-    subcategory: [Array],
+    subcategory: [String],
+    deletedAt: Date,
     isDeleted: {
         type: Boolean,
         default: false
     },
+    publishedAt: Date,
     isPublished: {
         type: Boolean,
         default: false
-    },
-    timestamps: true
-})
+    }
+}, { timeStamps: true });
 
 module.exports = mongoose.model("Blog", blogSchema)
