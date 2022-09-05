@@ -6,7 +6,7 @@ const AuthorModel = require("../models/authorModel")
 // - Create a author document from request body.
 //   `Endpoint: BASE_URL/authors`
 
-const createAuthor = async function (req, res) {
+const createAuthor = async (req, res) => {
     try {
         let author = req.body
         if (!author) res.status(401).send({ status: false, msg: ">> nothing found from body..." })

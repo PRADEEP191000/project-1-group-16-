@@ -10,7 +10,7 @@ const AuthorModel = require('../models/authorModel')
 
 // - Return HTTP status 400 for an invalid request with a response body like [this](#error-response-structure)
 
-const createBlog = async function (req, res) {
+const createBlog = async (req, res) => {
     try {
         // taking data from body
         const newBlog = req.body
