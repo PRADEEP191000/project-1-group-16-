@@ -8,7 +8,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 
-mongoose.connect("mongodb+srv://functionUp:FNTvoe53WSA2sHeK@cluster0.ge3cm6p.mongodb.net/authentication-Jwt-DB?retryWrites=true&w=majority",
+mongoose.connect("mongodb+srv://functionUp:FNTvoe53WSA2sHeK@cluster0.ge3cm6p.mongodb.net/?retryWrites=true&w=majority",
 {
     useNewUrlParser: true
 })
