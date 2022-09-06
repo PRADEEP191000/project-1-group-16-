@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const ObjectId = mongoose.Schema.Types.ObjectId
+const ObjectId = mongoose.Schema.Types.ObjectId;
 
 const blogSchema = new mongoose.Schema({
     title: {
@@ -33,4 +33,4 @@ const blogSchema = new mongoose.Schema({
     }
 }, { timeStamps: true });
 
-module.exports = mongoose.model("Blog", blogSchema)
+module.exports = mongoose.model("Blog", blogSchema);

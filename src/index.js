@@ -12,12 +12,17 @@ mongoose.connect("mongodb+srv://Project-1:6H3EsS0qOKLtWR0B@cluster0.hln3nud.mong
     {
         useNewUrlParser: true
     })
-    .then(() => console.log(">> Database connected..."))
-    .catch(err => console.log(err))
+    .then(() => console.log("Database connected..."))
+    .catch(err => console.log(err));
 
-app.use('/', route)
+
+app.use('/', route);
+app.use((req, res, next) => {
+    const err = new Error('/ Path not found /');
+    return res.status(404).send({status: 'ERROR', error: err.message})
+});
 
 
 app.listen(process.env.PORT || 3000, function () {
-    console.log('Express app running on port ' + (process.env.PORT || 3000))
+    console.log('Express app listening on port ' + (process.env.PORT || 3000))
 });
