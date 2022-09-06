@@ -17,15 +17,15 @@ const createBlog = async (req, res) => {
         const id = newBlog.authorId;
 
         // checking all the required fields are present or not(sending error msg according to that)
-        if (!newBlog.title) { return res.status(400).send({ status: false, msg: " Title is required " }) };
-        if (!newBlog.body) { return res.status(400).send({ status: false, msg: " Body is required " }) };
-        if (!newBlog.authorId) { return res.status(400).send({ status: false, msg: " Category is required " }) };
-        if (!newBlog.category) { return res.status(400).send({ status: false, msg: " AuthorId is required " }) };
+        if (!newBlog.title) { return res.status(400).send({ status: false, msg: "Title is required" }) };
+        if (!newBlog.body) { return res.status(400).send({ status: false, msg: "Body is required" }) };
+        if (!newBlog.authorId) { return res.status(400).send({ status: false, msg: "Category is required" }) };
+        if (!newBlog.category) { return res.status(400).send({ status: false, msg: "AuthorId is required" }) };
 
         //finding by authorId
         const validateId = await AuthorModel.findById(id);
         //check valid authorId
-        if (!validateId) return res.status(404).send({ status: false, msg: " AuthorId is invalid " });
+        if (!validateId) return res.status(404).send({ status: false, msg: "AuthorId is invalid" });
 
         // creating new blog
         const data = await BlogModel.create(newBlog);
@@ -63,7 +63,7 @@ const getBlogs = async (req, res) => {
 
         // passing the filter variable inside find for validation
         let allBlogs = await BlogModel.find(filterData);
-        if (allBlogs.length == 0) return res.status(404).send({ status: false, msg: " No blog found " });
+        if (allBlogs.length == 0) return res.status(404).send({ status: false, msg: "No blog found" });
 
         // sending response
         res.status(200).send({ status: true, data: allBlogs });
@@ -128,7 +128,7 @@ const deleteBlogById = async (req, res) => {
             { isDeleted: true, deletedAt: Date.now() },
             { new: true }
         );
-        res.status(200).send({ status: true, msg: " document deleted successfully " });
+        res.status(200).send({ status: true, msg: "document deleted successfully" });
     } catch (err) {
         res.status(500).send({ status: "error", error: err.message });
     }
@@ -144,7 +144,7 @@ const deleteBlogByQueryParam = async (req, res) => {
     try {
         // taking queries
         let queries = req.query;
-        if (!queries) return res.status(404).send({ status: false, msg: "no queries present to delete " });
+        if (!queries) return res.status(404).send({ status: false, msg: "no queries present to delete" });
 
         // validating queries inside BlogModel
         let filterByQuery = await BlogModel.find(queries);
@@ -158,7 +158,7 @@ const deleteBlogByQueryParam = async (req, res) => {
             { $set: { isDeleted: true, deletedAt: new Date() } },
             { new: true }
         );
-        res.status(200).send({ status: true, msg: "document deleted successfully " });
+        res.status(200).send({ status: true, msg: "document deleted successfully" });
     } catch (err) {
         res.status(500).send({ status: "error", error: err.message });
     }
