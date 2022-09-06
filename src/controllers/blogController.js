@@ -48,16 +48,16 @@ const createBlog = async (req, res) => {
 
 const getBlogs = async (req, res) => {
     try {
-        let query = req.query;
-        let filter = {
+        let queries = req.query;
+        let filterData = {
             isDeleted: false,
             isPublished: true,
 
             //** using spread to add queries taken from req **// 
-            ...query
+            ...queries
         }
         // passing the filter variable inside find for validation
-        let allBlogs = await BlogModel.find(filter)
+        let allBlogs = await BlogModel.find(filterData)
         if (allBlogs.length == 0) return res.status(404).send({ status: false, msg: ">> No blog found" })
 
         res.status(200).send({ status: true, data: allBlogs })
