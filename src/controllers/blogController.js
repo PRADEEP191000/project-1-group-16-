@@ -147,6 +147,7 @@ const deleteBlogByQueryParam = async (req, res) => {
         if (!queries) return res.status(404).send({ status: false, msg: "no queries present to delete" });
 
         // validating queries inside BlogModel
+        // filterByQuery returns an array of objects
         let filterByQuery = await BlogModel.find(queries);
         if (filterByQuery.length == 0) return res.status(404).send({ status: false, msg: "No blog found to delete" });
 

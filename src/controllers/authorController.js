@@ -11,7 +11,7 @@ const createAuthor = async (req, res) => {
         // taking document from body
         let author = req.body;
         // checking anything inputted or not
-        if (!author) res.status(401).send({ status: false, msg: "nothing found from body" });
+        if (!author) return res.status(401).send({ status: false, msg: "nothing found from body" });
 
         // checking all the required fields are present or not(sending error msg according to that)
         if (!author.fname) { return res.status(400).send({ status: false, msg: "First name is required" }) };
