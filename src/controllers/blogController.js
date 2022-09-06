@@ -1,14 +1,7 @@
 const BlogModel = require("../models/blogModel")
 const AuthorModel = require('../models/authorModel')
 
-
-//### POST /blogs
-// - Create a blog document from request body. Get authorId in request body only.
-// - Make sure the authorId is a valid authorId by checking the author exist in the authors collection.
-// - Return HTTP status 201 on a succesful blog creation. Also return the blog document. The response should be a JSON object like [this](#successful-response-structure) 
-// - Create atleast 5 blogs for each author
-
-// - Return HTTP status 400 for an invalid request with a response body like [this](#error-response-structure)
+//=============================createBlog=====================================//
 
 const createBlog = async (req, res) => {
     try {
@@ -33,18 +26,7 @@ const createBlog = async (req, res) => {
     }
 }
 
-
-// ### GET /blogs
-// - Returns all blogs in the collection that aren't deleted and are published
-// - Return the HTTP status 200 if any documents are found. The response structure should be like [this](#successful-response-structure) 
-// - If no documents are found then return an HTTP status 404 with a response like [this](#error-response-structure) 
-// - Filter blogs list by applying filters. Query param can have any combination of below filters.
-//   - By author Id
-//   - By category
-//   - List of blogs that have a specific tag
-//   - List of blogs that have a specific subcategory
-// example of a query url: blogs?filtername=filtervalue&f2=fv2
-
+//=======================================================getblog===================================//
 
 const getBlogs = async (req, res) => {
     try {
@@ -64,8 +46,88 @@ const getBlogs = async (req, res) => {
     } catch (err) {
         res.status(500).send({ status: "error", error: err.message })
     }
+};
+//===========================put/Blog/blogId=======================//
+
+const updateBlog = async (req, res) => {
+
+    try {
+        // taking blogId from params and checking that it's present
+        let blogId = req.params.blogId
+        if (!blogId) return res.status(400).send({ status: false, msg: ">> blogId required in params" })
+
+        // finding the blogId inside BlogModel
+        let validateBlogId = await BlogModel.findById(blogId)
+        if (!validateBlogId) return res.status(400).send({ status: false, msg: ">> invalid blogId" })
+
+        // taking details from the body
+        let details = req.body
+
+        // updating that blog with findOneAndUpdate
+        const updatedBlog = await BlogModel.findOneAndUpdate(
+            { _id: blogId },
+            {
+                title: details.title, body: details.body, authorId: details.authorId, tags: details.tags, category: details.category,
+                subcategory: details.subcategory, isPublished: true, publishedAt: Date.now()
+            },
+            { new: true, upsert: true }
+        )
+
+        res.status(200).send({ status: true, data: updatedBlog })
+    } catch (err) {
+        res.status(500).send({ status: "error", error: err.message })
+    }
+}
+
+//============================deleteById======================================//
+
+const deleteBlogById = async (req, res) => {
+    try {
+        // taking blogId from params
+        let blogId = req.params.blogId
+
+        // validating blogId
+        let dataBlogId = await BlogModel.findById(blogId)
+        if (!dataBlogId) return res.status(400).send({ status: false, msg: "BlogId not valid" })
+
+        let deleteBlog = await BlogModel.updateOne(
+            { _id: blogId },
+            { isDeleted: true, deletedAt: Date.now() },
+            { new: true }
+        )
+        res.status(200).send({ status: true, msg: ">> document deleted successfully" })
+        //{ msg: "Blog has been deleted successfully", data: deleteBlog }
+    } catch (err) {
+        res.status(500).send({ status: "error", error: err.message })
+    }
 }
 
 
+//========================deleteWithQueryParams======================================//
 
-module.exports = { createBlog, getBlogs }
+const deleteBlogByQueryParam = async (req, res) => {
+    try {
+        // taking queries
+        let queries = req.query;
+        if (!queries) return res.status(404).send({ status: false, msg: "> no queries present to delete" })
+        
+        // validating queries inside BlogModel
+        let filterByQuery = await BlogModel.find(queries)
+        if (filterByQuery.length == 0) return res.status(404).send({ status: false, msg: "> No blog found to delete" })
+
+        // deleting documents according to the query param inputs
+        // according to those data there will may be a scenario where we have to update many docs
+        // thats'why we are using updateMany
+        let deletedBlogDetails = await BlogModel.updateMany(
+            queries,
+            { $set: { isDeleted: true, deletedAt : new Date() } },
+            { new: true }
+        )
+        res.status(200).send({ status: true, msg: ">> document deleted successfully" })
+    } catch (err) {
+        res.status(500).send({ status: "error", error: err.message })
+    }
+}
+
+
+module.exports = { createBlog, getBlogs, updateBlog, deleteBlogById, deleteBlogByQueryParam }
