@@ -73,6 +73,7 @@ const getBlogs = async (req, res) => {
 // - Return an HTTP status 200 if updated successfully with a body like [this](#successful-response-structure) 
 // - Also make sure in the response you return the updated blog document. 
 
+
 const updateBlog = async (req, res) => {
 
     try {
@@ -81,7 +82,7 @@ const updateBlog = async (req, res) => {
         if (!blogId) return res.status(400).send({ status: false, msg: ">> blogId required in params" })
 
         // finding the blogId inside BlogModel
-        let validateBlogId = await BlogModel.findById(blogId)
+        let validateBlogId = await BlogModel.findOne({_id:blogId, isDeleted:false})
         if (!validateBlogId) return res.status(400).send({ status: false, msg: ">> invalid blogId" })
 
         // taking details from the body
@@ -89,19 +90,45 @@ const updateBlog = async (req, res) => {
 
         // updating that blog with findOneAndUpdate
         const updatedBlog = await BlogModel.findOneAndUpdate(
-            { _id: blogId },
-            {
-                title: details.title, body: details.body, authorId: details.authorId, tags: details.tags, category: details.category,
-                subcategory: details.subcategory, isPublished: true, publishedAt: Date.now()
-            },
-            { new: true, upsert: true }
+            { _id: blogId }, { $push: { tags: details.tags, subcategory: details.subcategory }, title: details.title, body: details.body, authorId: details.authorId, isPublished: true, publishedAt: Date.now()
+            }, { new: true, upsert: true }
         )
-
-        res.status(200).send({ status: true, data: updatedBlog })
+        // let check = await blogsModel.findByIdAndUpdate(getId, { $push: { tags: data.tags, subcategory: data.subcategory }, title: data.title, body: data.body, category: data.category }, { new: true })
+        // res.status(200).send({ status: true, data: updatedBlog })
     } catch (err) {
         res.status(500).send({ status: "error", error: err.message })
     }
 }
+
+// const updateBlog = async (req, res) => {
+
+//     try {
+//         // taking blogId from params and checking that it's present
+//         let blogId = req.params.blogId
+//         if (!blogId) return res.status(400).send({ status: false, msg: ">> blogId required in params" })
+
+//         // finding the blogId inside BlogModel
+//         let validateBlogId = await BlogModel.findById(blogId)
+//         if (!validateBlogId) return res.status(400).send({ status: false, msg: ">> invalid blogId" })
+
+//         // taking details from the body
+//         let details = req.body
+
+//         // updating that blog with findOneAndUpdate
+//         const updatedBlog = await BlogModel.findOneAndUpdate(
+//             { _id: blogId },
+//             {
+//                 title: details.title, body: details.body, authorId: details.authorId, tags: details.tags, category: details.category,
+//                 subcategory: details.subcategory, isPublished: true, publishedAt: Date.now()
+//             },
+//             { new: true, upsert: true }
+//         )
+
+//         res.status(200).send({ status: true, data: updatedBlog })
+//     } catch (err) {
+//         res.status(500).send({ status: "error", error: err.message })
+//     }
+// }
 
 
 //### DELETE /blogs/:blogId
@@ -150,7 +177,8 @@ const deleteBlogByQueryParam = async (req, res) => {
         // thats'why we are using updateMany
         let deletedBlogDetails = await BlogModel.updateMany(
             queries,
-            { $set: { isDeleted: true, deletedAt : new Date() } },
+            { $set: { isDeleted: true, deletedAt : new
+                Date() } },
             { new: true }
         )
         res.status(200).send({ status: true, msg: ">> document deleted successfully" })
