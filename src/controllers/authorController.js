@@ -1,3 +1,5 @@
+
+const jwt = require("jsonwebtoken");
 const AuthorModel = require("../models/authorModel")
 
 
@@ -5,6 +7,7 @@ const AuthorModel = require("../models/authorModel")
 // - Create an author - atleast 5 authors
 // - Create a author document from request body.
 //   `Endpoint: BASE_URL/authors`
+//=======================================createAuthor=====================//
 
 const createAuthor = async (req, res) => {
     try {
@@ -34,4 +37,36 @@ const createAuthor = async (req, res) => {
     }
 }
 
-module.exports = { createAuthor }
+//==================================================authorLogin==============================//
+
+const loginAuthor = async function (req, res) {
+    try {
+      let userName = req.body.email;
+      let password = req.body.password;
+      if (!userName && !password) return res.status(400).send({ msg: "please enter username and password" })
+      let author = await AuthorModel.findOne({ email: userName, password: password });
+  
+      if (!author)
+        return res.status(400).send({
+          status: false,
+          msg: "username or the password is not corerct",
+        })
+      let token = jwt.sign(
+        {
+          authorId: author._id.toString(),
+          batch: "plutonium project-1",
+          organisation: "FunctionUp",
+        },
+        "project-1"
+      );
+      res.setHeader("x-api-key", token);
+      res.status(200).send({ status: true, token: token });
+     
+    } catch (err) {
+      console.log("This is the error:", err.message)
+      res.status(500).send({ msg: "Error", error: err.message })
+    }
+  
+  }
+
+module.exports = { createAuthor, loginAuthor }

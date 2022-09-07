@@ -54,10 +54,10 @@ const updateBlog = async (req, res) => {
     try {
         // taking blogId from params and checking that it's present
         let blogId = req.params.blogId
-        if (!blogId) return res.status(400).send({ status: false, msg: ">> blogId required in params" })
+        //if (!blogId) return res.status(400).send({ status: false, msg: ">> blogId required in params" })
 
         // finding the blogId inside BlogModel
-        let validateBlogId = await BlogModel.findById(blogId)
+        let validateBlogId = await BlogModel.findOne({_id: blogId, isDeleted:false})
         if (!validateBlogId) return res.status(400).send({ status: false, msg: ">> invalid blogId" })
 
         // taking details from the body
@@ -92,10 +92,10 @@ const deleteBlogById = async (req, res) => {
 
         let deleteBlog = await BlogModel.updateOne(
             { _id: blogId },
-            { isDeleted: true, deletedAt: Date.now() },
+            { isDeleted: false, deletedAt: Date.now() },
             { new: true }
         )
-        res.status(200).send({ status: true, msg: ">> document deleted successfully" })
+        res.status(200).send({ status: true, msg: "document deleted successfully", data:deleteBlog})
         //{ msg: "Blog has been deleted successfully", data: deleteBlog }
     } catch (err) {
         res.status(500).send({ status: "error", error: err.message })
@@ -118,12 +118,12 @@ const deleteBlogByQueryParam = async (req, res) => {
         // deleting documents according to the query param inputs
         // according to those data there will may be a scenario where we have to update many docs
         // thats'why we are using updateMany
-        let deletedBlogDetails = await BlogModel.updateMany(
+        let deletedByQuery = await BlogModel.updateMany(
             queries,
             { $set: { isDeleted: true, deletedAt : new Date() } },
             { new: true }
         )
-        res.status(200).send({ status: true, msg: ">> document deleted successfully" })
+        res.status(200).send({ status: true, msg: ">> document deleted successfully", data: deletedByQuery })
     } catch (err) {
         res.status(500).send({ status: "error", error: err.message })
     }

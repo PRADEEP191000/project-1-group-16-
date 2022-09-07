@@ -8,14 +8,19 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 
-mongoose.connect("mongodb+srv://Project-1:6H3EsS0qOKLtWR0B@cluster0.hln3nud.mongodb.net/Project-1?retryWrites=true&w=majority",
+mongoose.connect("mongodb+srv://Project-1:6H3EsS0qOKLtWR0B@cluster0.hln3nud.mongodb.net/Practice",
     {
         useNewUrlParser: true
     })
     .then(() => console.log("Database connected"))
     .catch(err => console.log(err))
 
-app.use('/', route)
+app.use('/', route);
+
+app.use((req, res, next) =>{
+    const error = new Error(' path not found insert correct fath.');
+    return res.status(404).send({status: "error", error:error.message})
+})
 
 
 app.listen(process.env.PORT || 3000, function () {
