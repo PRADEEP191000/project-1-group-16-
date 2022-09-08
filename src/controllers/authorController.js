@@ -14,11 +14,11 @@ const createAuthor = async (req, res) => {
         if (!author) return res.status(401).send({ status: false, msg: "nothing found from body" });
 
         // checking all the required fields are present or not(sending error msg according to that)
-        if (!author.fname) { return res.status(400).send({ status: false, msg: "First name is required" }) };
-        if (!author.lname) { return res.status(400).send({ status: false, msg: "Last name is required" }) };
-        if (!author.title) { return res.status(400).send({ status: false, msg: "Title is required" }) };
-        if (!author.email) { return res.status(400).send({ status: false, msg: "Email is required" }) };
-        if (!author.password) { return res.status(400).send({ status: false, msg: "Password is required" }) };
+        if (!author.fname) return res.status(400).send({ status: false, msg: "First name is required" }) ;
+        if (!author.lname) return res.status(400).send({ status: false, msg: "Last name is required" });
+        if (!author.title) return res.status(400).send({ status: false, msg: "Title is required" });
+        if (!author.email) return res.status(400).send({ status: false, msg: "Email is required" }) ;
+        if (!author.password)  return res.status(400).send({ status: false, msg: "Password is required" }) ;
 
 
         // validating fields with REGEX formats

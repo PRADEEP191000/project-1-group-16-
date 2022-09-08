@@ -8,7 +8,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 
-mongoose.connect("mongodb+srv://Project-1:6H3EsS0qOKLtWR0B@cluster0.hln3nud.mongodb.net/Project-1?retryWrites=true&w=majority",
+mongoose.connect("mongodb+srv://Project-1:6H3EsS0qOKLtWR0B@cluster0.hln3nud.mongodb.net/Practice?retryWrites=true&w=majority",
     {
         useNewUrlParser: true
     })
@@ -17,9 +17,10 @@ mongoose.connect("mongodb+srv://Project-1:6H3EsS0qOKLtWR0B@cluster0.hln3nud.mong
 
 
 app.use('/', route);
+
 app.use((req, res, next) => {
-    const err = new Error('/ Path not found /');
-    return res.status(404).send({status: 'ERROR', error: err.message})
+    const error = new Error('/ Path not found /');
+    return res.status(404).send({status: 'ERROR', error: error.message})
 });
 
 
