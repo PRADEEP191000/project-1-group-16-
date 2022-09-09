@@ -3,7 +3,6 @@ const express = require('express');
 const router = express.Router();
 
 // importing controllers
-const LoginController = require("../controllers/loginController")
 const Middlewares = require('../middlewares/commonMiddleware')
 const AuthorController = require("../controllers/authorController");
 const BlogController = require("../controllers/blogController");
@@ -13,7 +12,7 @@ const BlogController = require("../controllers/blogController");
 //**    APIS   **//
 
 // Author apis
-router.post("/login", LoginController.login);
+router.post("/login", AuthorController.login);
 router.post("/authors", AuthorController.createAuthor);
 
 // blogs apis

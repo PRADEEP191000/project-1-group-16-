@@ -21,7 +21,13 @@ const blogSchema = new mongoose.Schema({
     },
     tags: [{ type: String, trim: true }],
 
-    category: [{ type: String, required: 'Blog category is required', trim: true }],
+    category: [
+        {
+            type: String,
+            required: true,
+            trim: true
+        }
+    ],
 
     subcategory: [{ type: String, trim: true }],
 

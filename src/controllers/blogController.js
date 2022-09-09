@@ -8,7 +8,7 @@ const createBlog = async (req, res) => {
         const newBlog = req.body;
 
         //checking that there is data inside body
-        if (!newBlog) return res.status(400).send({ status: false, msg: "please provide details" })
+        if (Object.keys(newBlog) == 0) return res.status(400).send({ status: false, msg: "please provide details" })
 
         // checking all the required fields are present or not(sending error msg according to that)
         if (!newBlog.title) return res.status(400).send({ status: false, msg: "Title is required" });
@@ -17,6 +17,7 @@ const createBlog = async (req, res) => {
         if (!newBlog.category) return res.status(400).send({ status: false, msg: "Category is required" });
 
         //finding by authorId
+        let authorId = newBlog['authorId']
         const validateAuthorId = await AuthorModel.findById(authorId);
         //check valid authorId
         if (!validateAuthorId) return res.status(404).send({ status: false, msg: "AuthorId is invalid" });
@@ -65,6 +66,9 @@ const updateBlog = async (req, res) => {
 
         // taking the blog from authorise middleware
         let blog = req.foundBlog
+        // getting blog from middleware(authorisation) 
+        if (!blog) return res.status(404).send({ status: false, msg: "invalid blogId" });
+
         let blogId = req.blogId;
 
         // extracting authorId from blog
@@ -75,6 +79,9 @@ const updateBlog = async (req, res) => {
 
         // taking details from the body
         let details = req.body;
+
+        let check = await BlogModel.findById(blogId)
+        if (check['isDeleted'] == true) return res.status(404).send({ status: false, msg: "requested document has already deleted" });
 
         // updating that blog with findOneAndUpdate
         const updatedBlog = await BlogModel.findOneAndUpdate(
@@ -98,12 +105,13 @@ const deleteBlogById = async (req, res) => {
     try {
         // taking blogId from middlewares/authorise
         let blogId = req.blogId;
+        // getting blog from middleware(authorisation) 
+        let isBlogIdPresentDb = req.foundBlog
 
         // validating blogId
-        let isBlogIdPresentDb = await BlogModel.findById(blogId);
         if (!isBlogIdPresentDb) return res.status(404).send({ status: false, msg: "Blog is not exist" });
 
-        if (isBlogIdPresent.isDeleted === true) return res.status(404).send({ status: false, msg: "you are requesting to delete already deleted blog" });
+        if (isBlogIdPresentDb.isDeleted === true) return res.status(404).send({ status: false, msg: "you are requesting to delete already deleted blog" });
 
         // deleting that perticular doc
         let deleteBlog = await BlogModel.updateOne(
