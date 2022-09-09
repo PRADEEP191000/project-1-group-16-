@@ -52,7 +52,7 @@ const createAuthor = async (req, res) => {
         let author = req.body;
         // checking anything inputted or not
         // as empty object gives truthy value , so we declarin if there is no keys return nothing found
-        if (Object.keys(author) == 0) return res.status(401).send({ status: false, msg: "nothing found from body" });
+        if (Object.keys(author) == 0) return res.status(404).send({ status: false, msg: "nothing found from body" });
 
         // checking all the required fields are present or not(sending error msg according to that)
         if (!author.fname) return res.status(400).send({ status: false, msg: "First name is required" });
@@ -66,13 +66,13 @@ const createAuthor = async (req, res) => {
         const validateFName = (/^(?=.{1,50}$)[a-z]+(?:['_.\s][a-z]+)*$/i.test(author.fname));
         const validateLName = (/^(?=.{1,50}$)[a-z]+(?:['_.\s][a-z]+)*$/i.test(author.lname));
         const validateEmail = (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(author.email));
-        const validatePassword = (/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})+$/.test(author.password))
+        const validatePassword = (/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/.test(author.password))
 
 
         if (!validateFName) return res.status(400).send({ status: false, msg: "First Name is invalid, Please check your First Name" });
         if (!validateLName) return res.status(400).send({ status: false, msg: "Last Name is invalid, Please check your Last Name" });
         if (!validateEmail) return res.status(400).send({ status: false, msg: "Email is invalid, Please check your Email address" });
-        if (!validatePassword) return res.status(400).send({ status: false, msg: "use a strong password with at least => 1 lowercase alphabetical character => 1 uppercase alphabetical character => 1 numeric character => one special character and password must be eight characters or longer)" });
+        if (!validatePassword) return res.status(400).send({ status: false, msg: "use a strong password with at least => 1 lowercase alphabetical character => 1 uppercase alphabetical character => 1 numeric character => one special character and password must be eight characters or longer" });
 
         // creating new author
         let authorCreated = await AuthorModel.create(author);
