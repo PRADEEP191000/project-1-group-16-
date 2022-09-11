@@ -1,7 +1,15 @@
 const BlogModel = require("../models/blogModel");
 const AuthorModel = require('../models/authorModel');
-const GlobalFunctions = require('../controllers/globalFunctions');
+// const = require('../controllers/);
 const ObjectId = require('mongoose').Types.ObjectId
+
+
+// Defined Some Globally used functions
+
+const checkInputs = (value) => { return (Object.keys(value).length > 0); }
+
+
+const isValidInput = (value) => { return ((typeof (value) === 'string' && value.length > 0)); }
 
 
 
@@ -15,15 +23,15 @@ const createBlog = async (req, res) => {
         let { title, body, authorId, category, isPublished, tags, subcategory, ...rest } = req.body
 
         //checking that there is data inside body
-        if (!GlobalFunctions.checkInputs(blogData)) return res.status(404).send({ status: false, msg: "please provide details to create a blog" })
+        if (!checkInputs(blogData)) return res.status(404).send({ status: false, msg: "please provide details to create a blog" })
 
         //checking if any other attributes (keys) in req body is present or not (which we don't required to save)
-        if (GlobalFunctions.checkInputs(rest) > 0) return res.status(400).send({ status: false, msg: "please provide required details only => title, body, authorId, category, isPublished " });
+        if (checkInputs(rest) > 0) return res.status(400).send({ status: false, msg: "please provide required details only => title, body, authorId, category, isPublished " });
 
         // checking all the required fields are present or not(sending error msg according to that)
-        if (!GlobalFunctions.isValidInput(title)) return res.status(400).send({ status: false, msg: "Title is required [ in string ] " });
-        if (!GlobalFunctions.isValidInput(body)) return res.status(400).send({ status: false, msg: "Body is required [ in string ] " });
-        if (!GlobalFunctions.isValidInput(authorId)) return res.status(400).send({ status: false, msg: "AuthorId is required [ in string ] " });
+        if (!isValidInput(title)) return res.status(400).send({ status: false, msg: "Title is required [ in string ] " });
+        if (!isValidInput(body)) return res.status(400).send({ status: false, msg: "Body is required [ in string ] " });
+        if (!isValidInput(authorId)) return res.status(400).send({ status: false, msg: "AuthorId is required [ in string ] " });
         if (!category) return res.status(400).send({ status: false, msg: "Category is required [ in array of strings ] " });
 
         // checking that the authorId which is given is that in a perfect _id format .i.e. is it a hex value or not 
@@ -58,7 +66,7 @@ const getBlogs = async (req, res) => {
         let { tags, category, subcategory, authorId, ...rest } = req.query;
 
         //checking if any other attributes (keys) in req query is present or not (which we don't required)
-        if (GlobalFunctions.checkInputs(rest)) return res.status(404).send({ status: false, msg: "please provide query between valid credentials only => tags, category, subcategory, authorId" });
+        if (checkInputs(rest)) return res.status(404).send({ status: false, msg: "please provide query between valid credentials only => tags, category, subcategory, authorId" });
 
         // checking that if authorId present , provided authorId's format is a hex value (common format for all ids in mongo DB)
         if (authorId && (!ObjectId.isValid(authorId))) return res.status(404).send({ status: false, msg: "provided authorId is invalid" });
@@ -103,13 +111,10 @@ const updateBlog = async (req, res) => {
         // taking details from the body
         let details = req.body;
         // destructuring 
-        let { title, body, authorId, category, isPublished, tags, subcategory, ...rest } = req.body
-
-        // checking that if authorId present , provided authorId's format is a hex value (common format for all ids in mongo DB)
-        if (authorId && (!ObjectId.isValid(authorId))) return res.status(404).send({ status: false, msg: "provided authorId in request body is invalid" });
+        let { title, body, category, isPublished, tags, subcategory, ...rest } = req.body
 
         //checking if any other attributes (keys) in req body is present or not (which we don't required to save)
-        if (GlobalFunctions.checkInputs(rest)) return res.status(400).send({ status: false, msg: "please request with acceptable fields only => title, body, authorId, category, isPublished, tags, subcategory to update your document" })
+        if (checkInputs(rest)) return res.status(400).send({ status: false, msg: "please request with acceptable fields only => title, body, category, isPublished, tags, subcategory to update your document" })
 
 
         // taking blogId (provided in params) from middleware/authorisation 
@@ -125,7 +130,7 @@ const updateBlog = async (req, res) => {
             { _id: blogIdFromParams },
             {
                 $push: { tags: details.tags, subcategory: details.subcategory, category: details.category },
-                $set: { title: details.title, body: details.body, authorId: details.authorId, isPublished: true, publishedAt: new Date() }
+                $set: { title: details.title, body: details.body, isPublished: true, publishedAt: new Date() }
             },
             { new: true }
         );
@@ -178,11 +183,11 @@ const deleteBlogByQueryParam = async (req, res) => {
         let requestingAuthorId = req.requestingAuthor
         // taking queries
         let queries = req.query;
-        if (!GlobalFunctions.checkInputs(queries)) return res.status(404).send({ status: false, msg: "please add queries" });
+        if (!checkInputs(queries)) return res.status(404).send({ status: false, msg: "please add queries" });
 
         let { tags, category, subcategory, authorId, isPublished, ...rest } = req.query;
 
-        if (GlobalFunctions.checkInputs(rest)) return res.status(400).send({ status: false, msg: " please provide valide filter key in query => tags, category, subcategory, authorId, isPublished only" })
+        if (checkInputs(rest)) return res.status(400).send({ status: false, msg: " please provide valide filter key in query => tags, category, subcategory, authorId, isPublished only" })
 
         if (!authorId || (authorId != requestingAuthorId)) req.query.authorId = requestingAuthorId;
 
