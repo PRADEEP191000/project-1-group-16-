@@ -15,20 +15,20 @@ const createAuthor = async (req, res) => {
 
         // checking anything inputted or not
         // as empty object gives truthy value , so we declarin if there is no keys return nothing found
-        if (!GlobalFunctions.checkBodyInputs(author)) return res.status(404).send({ status: false, msg: "nothing found from body" });
+        if (!GlobalFunctions.checkInputs(author)) return res.status(404).send({ status: false, msg: "nothing found from body" });
 
         //checking if any other attributes (keys) in req body is present or not (which we don't required to save)
-        if (GlobalFunctions.checkRest(rest)) return res.status(404).send({ status: false, msg: "please provide required details only => fname, lname, title : ['Mr'/ 'Mrs'/ 'Miss'] , email & password" });
+        if (GlobalFunctions.checkInputs(rest)) return res.status(404).send({ status: false, msg: "please provide required details only => fname, lname, title : ['Mr'/ 'Mrs'/ 'Miss'] , email & password" });
 
         // checking all the required fields are present or not(sending error msg according to that)
-        if (!GlobalFunctions.checkValidInput(fname)) return res.status(400).send({ status: false, msg: "First name is required [in string] " });
-        if (!GlobalFunctions.checkValidInput(lname)) return res.status(400).send({ status: false, msg: "Last name is required [in string] " });
+        if (!GlobalFunctions.isValidInput(fname)) return res.status(400).send({ status: false, msg: "First name is required [in string] " });
+        if (!GlobalFunctions.isValidInput(lname)) return res.status(400).send({ status: false, msg: "Last name is required [in string] " });
 
-        if (!GlobalFunctions.checkValidInput(title)) return res.status(400).send({ status: false, msg: "Title is required [in string] " });
+        if (!GlobalFunctions.isValidInput(title)) return res.status(400).send({ status: false, msg: "Title is required [in string] " });
         if (title != ("Mr" || "Mrs" || "Miss")) return res.status(400).send({ status: false, msg: "put title between ['Mr'/ 'Mrs'/ 'Miss'] " });
 
-        if (!GlobalFunctions.checkValidInput(email)) return res.status(400).send({ status: false, msg: "Email is required [in string] " });
-        if (!GlobalFunctions.checkValidInput(password)) return res.status(400).send({ status: false, msg: "Password is required [in string] " });
+        if (!GlobalFunctions.isValidInput(email)) return res.status(400).send({ status: false, msg: "Email is required [in string] " });
+        if (!GlobalFunctions.isValidInput(password)) return res.status(400).send({ status: false, msg: "Password is required [in string] " });
 
 
         // validating fields with REGEX formats
@@ -62,15 +62,15 @@ const login = async (req, res) => {
         let credentials = req.body
         let { email, password, ...rest } = req.body
         // as empty object gives truthy value , so we declarin if there is no keys return nothing found
-        if (!GlobalFunctions.checkBodyInputs(credentials)) return res.status(404).send({ status: false, msg: "nothing found from body" });
+        if (!GlobalFunctions.checkInputs(credentials)) return res.status(404).send({ status: false, msg: "nothing found from body" });
 
         //checking if any other attributes (keys) in req body is present or not (which we don't required)
-        if (GlobalFunctions.checkRest(rest)) return res.status(404).send({ status: false, msg: "please enter email & password only" });
+        if (GlobalFunctions.checkInputs(rest)) return res.status(404).send({ status: false, msg: "please enter email & password only" });
 
         // taking EmailId and Password from body and checking both are present
         if (!email && !password) return res.status(404).send({ status: false, msg: "please enter EmailId and Password" })
-        if (!GlobalFunctions.checkValidInput(email)) return res.status(404).send({ status: false, msg: "please enter EmailId [ in string ] " })
-        if (!GlobalFunctions.checkValidInput(password)) return res.status(404).send({ status: false, msg: "please enter Password [ in string ] " })
+        if (!GlobalFunctions.isValidInput(email)) return res.status(404).send({ status: false, msg: "please enter EmailId [ in string ] " })
+        if (!GlobalFunctions.isValidInput(password)) return res.status(404).send({ status: false, msg: "please enter Password [ in string ] " })
 
         // checking that given email is in correct format
         const regexEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
