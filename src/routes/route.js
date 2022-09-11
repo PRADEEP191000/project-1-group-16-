@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 
 // importing controllers
-const Middlewares = require('../middlewares/commonMiddleware')
+const MW = require('../middlewares/commonMiddleware')
 const AuthorController = require("../controllers/authorController");
 const BlogController = require("../controllers/blogController");
 
@@ -16,13 +16,13 @@ router.post("/login", AuthorController.login);
 router.post("/authors", AuthorController.createAuthor);
 
 // blogs apis
-router.post("/blogs", Middlewares.authenticateAuthor, BlogController.createBlog);
-router.get("/getBlogs", Middlewares.authenticateAuthor, BlogController.getBlogs);
-router.put('/blogs/:authorId/:blogId', Middlewares.authenticateAuthor, Middlewares.authoriseAuthor, BlogController.updateBlog);
+router.post("/blogs", MW.authenticateAuthor, BlogController.createBlog);
+router.get("/getBlogs", MW.authenticateAuthor, BlogController.getBlogs);
+router.put('/blogs/:authorId/:blogId', MW.authenticateAuthor, MW.authoriseAuthor, BlogController.updateBlog);
 
 // delete apis
-router.delete('/blogs/:authorId/:blogId', Middlewares.authenticateAuthor, Middlewares.authoriseAuthor, BlogController.deleteBlogById);
-router.delete('/blogs/:authorId', Middlewares.authenticateAuthor, Middlewares.authoriseAuthor, BlogController.deleteBlogByQueryParam);
+router.delete('/blogs/:authorId/:blogId', MW.authenticateAuthor, MW.authoriseAuthor, BlogController.deleteBlogById);
+router.delete('/blogs/:authorId', MW.authenticateAuthor, MW.authoriseAuthor, BlogController.deleteBlogByQueryParam);
 
 
 

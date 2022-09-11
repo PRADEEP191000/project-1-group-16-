@@ -1,14 +1,10 @@
 const JWT = require('jsonwebtoken')
 const AuthorModel = require('../models/authorModel')
 const BlogModel = require('../models/blogModel')
+const ObjectId = require('mongoose').Types.ObjectId
 
 
-// ### Authentication
-// - Add an authorisation implementation for the JWT token that validates the token before every protected endpoint is called. If the validation fails, return a suitable error message with a corresponding HTTP status code
-// - Protected routes are create a blog, edit a blog, get the list of blogs, delete a blog(s)
-// - Set the token, once validated, in the request - `x-api-key`
-// - Use a middleware for authentication purpose.
-
+//**     /////////////////////////      Authentication      //////////////////////       **//
 const authenticateAuthor = async (req, res, next) => {
     try {
         // extracting the token from request's headers
@@ -19,7 +15,7 @@ const authenticateAuthor = async (req, res, next) => {
         // else verifying that token
         // verify takes two parameter
         // jwt.verify(<token from header>, "secret <used to create that token>")
-        let validateToken = JWT.verify(token, "-- plutonium-- project-blogging-site -- secret-token --")
+        let validateToken = JWT.verify(token, "-- plutonium-- project-blogging-site -- secret-token --")    // hv to chk callback to find evry part of token's error
 
         // checking if not decodedToken .i.e. given token is not a valid token
         if (!validateToken) return res.status(404).send({ status: false, msg: "invalid token" })
@@ -33,29 +29,27 @@ const authenticateAuthor = async (req, res, next) => {
     }
 }
 
-
-// ### Authorisation
-// - Make sure that only the owner of the blogs is able to edit or delete the blog.
-// - In case of unauthorized access return an appropirate error message.
-
+//**     /////////////////////////      Authorisation      //////////////////////       **//
 const authoriseAuthor = async (req, res, next) => {
 
     try {
 
         // extracting the userId from the validateToken's sent data( req.validateToken.AuthorId )
         let loggedInAuthor = req.validateToken.userId
+
         // taking the author from path params (who is requesting route)
         let requestingAuthor = req.params.authorId
+        if (!ObjectId.isValid(requestingAuthor)) return res.status(404).send({ status: false, msg: 'invalid authorId provided in path params' })
 
         // checking with two id's that author who is requesting route and whose data in token are the same
         if (loggedInAuthor != requestingAuthor) return res.status(404).send({ status: false, msg: 'user is not authorised' })
 
         // taking blogId from params and checking that it's present
-        let blogId = req.params.blogId
+        let blogIdFromParams = req.params.blogId
+        // if (!ObjectId.isValid(blogIdFromParams)) return res.status(404).send({ status: false, msg: 'invalid blogId provided in path params' })
 
         // finding the blog with blogId inside BlogModel
-        let validateBlogId = await BlogModel.findById(blogId)
-        // if (!validateBlogId) return res.status(404).send({ status: false, msg: "invalid blogId" });
+        let validateBlogId = await BlogModel.findById(blogIdFromParams)
 
         // sending values
         // userId found from token
@@ -65,7 +59,7 @@ const authoriseAuthor = async (req, res, next) => {
         // the blog found
         req.foundBlog = validateBlogId
         // id of the blog
-        req.blogId = blogId
+        req.blogIdFromParams = blogIdFromParams
 
         next()
 
